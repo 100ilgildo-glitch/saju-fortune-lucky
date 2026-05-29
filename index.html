@@ -608,7 +608,7 @@
 
                         <div class="form-group">
                             <label for="birth_date1">생년월일 *</label>
-                            <input type="date" id="birth_date1" name="birth_date1" required>
+                            <input type="texte" id="birth_date1" name="birth_date1" required>
                         </div>
 
                         <div class="form-group">
@@ -656,7 +656,7 @@
 
                         <div class="form-group">
                             <label for="birth_date2">생년월일 *</label>
-                            <input type="date" id="birth_date2" name="birth_date2">
+                            <input type="text" id="birth_date2" name="birth_date2">
                         </div>
 
                         <div class="form-group">
@@ -933,43 +933,45 @@
     <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // EmailJS 초기화
+        // 1. EmailJS 초기화 (사장님의 완벽한 공개 키 세팅)
         emailjs.init("tl5jPJIoiOMEfjMHj");
 
-        // 폼과 버튼 찾기 (아이디가 달라도 알아서 찾아오도록 보완)
-        let form = document.getElementById("emailForm") || document.querySelector("form");
-        let submitBtn = document.getElementById("submitBtn") || document.querySelector("button[type='submit']");
+        // 2. 화면에 있는 사주 신청서 양식(form)과 제출 버튼을 강제로 붙잡습니다.
+        let form = document.querySelector("form");
+        let submitBtn = document.querySelector("button[type='submit']") || document.getElementById("submitBtn");
 
-        // [핵심] 잠겨있는 버튼을 강제로 풀어줍니다. (이제 클릭이 됩니다!)
         if (submitBtn) {
             submitBtn.disabled = false; 
         }
 
         if (!form) {
-            console.error("신청서 폼(form) 태그를 찾을 수 없습니다.");
+            alert("시스템 오류: 신청서 양식을 찾을 수 없습니다.");
             return;
         }
 
-        // 제출 버튼 클릭 시 실행
+        // 3. 상담신청 버튼을 누를 때 실행되는 마법
         form.addEventListener("submit", function (event) {
-            event.preventDefault(); // 새로고침 방지
+            event.preventDefault(); // 화면 새로고침 방지
 
-            if (submitBtn) submitBtn.disabled = true; // 중복 발송 방지
+            if (submitBtn) submitBtn.disabled = true; // 중복 발송 차단
 
-            // EmailJS로 메일 전송
+            // 4. 이름표 상관없이 상자 안의 모든 데이터(1인, 2인 정보 전체)를 EmailJS로 전송!
             emailjs.sendForm("service_9oog4dh", "template_3uwin9a", form)
                 .then(function () {
-                    alert("상담 신청이 정상적으로 접수되었습니다.");
+                    // 🎉 드디어 성공했을 때 뜨는 명쾌한 팝업창
+                    alert("사주 상담 신청이 정상적으로 접수되었습니다! 🎉");
                     form.reset();
                     if (submitBtn) submitBtn.disabled = false;
                 })
                 .catch(function (error) {
                     console.error("EmailJS 전송 에러:", error);
-                    alert("이메일 전송 실패: " + (error.text || JSON.stringify(error)));
+                    // 💡 만약 실패하더라도 왜 안 가는지 이유를 똑똑하게 한글로 알려줍니다.
+                    alert("전송 실패 원인: " + (error.text || JSON.stringify(error)));
                     if (submitBtn) submitBtn.disabled = false;
                 });
         });
     });
 </script>
+    
 </body>
 </html>
