@@ -6,8 +6,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>사주마당 - 평생사주 및 운세 상담</title>
     <meta name="description" content="정통 명리학 전문인과 함께하는 평생사주, 신년운, 재물운, 건강운, 직업운, 궁합 상담 서비스">
+   
+  <style>
+    .form-group select,
+    .form-group input {
+      width: 100% !important;
+      padding: 12px 15px !important;
+      font-size: 16px !important;
+      color: #ffffff !important;
+      background-color: #1a1a1a !important;
+      border: 1px solid #e5ad35 !important;
+      border-radius: 6px !important;
+      box-sizing: border-box !important;
+      height: 50px !important;
+    }
+    .form-group input::placeholder {
+      color: #888888;
+    }
+  </style>
 
-    <!-- Favicon -->
+  <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon.png">
     <link rel="shortcut icon" href="favicon.png">
@@ -530,16 +548,16 @@
                             <label for="gender1">성별 *</label>
                             <select id="gender1" name="gender1" required>
                                 <option value="">선택하세요</option>
-                                <option value="male">남성</option>
-                                <option value="female">여성</option>
+                                <option value="남성">남성</option>
+                                <option value="여성">여성</option>
                             </select>
                         </div>
 
                         <div class="form-group">
                             <label for="birth_type1">생년월일 종류 *</label>
                             <select id="birth_type1" name="birth_type1" required>
-                                <option value="solar">양력</option>
-                                <option value="lunar">음력</option>
+                                <option value="양력">양력</option>
+                                <option value="음력">음력</option>
                             </select>
                         </div>
 
@@ -578,16 +596,16 @@
                             <label for="gender2">성별 *</label>
                             <select id="gender2" name="gender2">
                                 <option value="">선택하세요</option>
-                                <option value="male">남성</option>
-                                <option value="female">여성</option>
+                                <option value="남성">남성</option>
+                                <option value="여성">여성</option>
                             </select>
                         </div>
 
                         <div class="form-group">
                             <label for="birth_type2">생년월일 종류 *</label>
                             <select id="birth_type2" name="birth_type2">
-                                <option value="solar">양력</option>
-                                <option value="lunar">음력</option>
+                                <option value="양력">양력</option>
+                                <option value="음력">음력</option>
                             </select>
                         </div>
 
@@ -797,7 +815,7 @@
                     </div>
                     <div class="contact-text">
                         <h3>입금 계좌</h3>
-                        <p>농협 351-1377-7789-03<br>(예금주: 문광희)</p>
+                        <p>농협 351-****-7789-03<br>(예금주: 문**희)</p>
                     </div>
                 </div>
 
@@ -863,84 +881,50 @@
             </div>
         </div>
     </div>
-
-    <!-- Custom JavaScript -->
+    
+ <!-- Custom JavaScript -->
     <script src="main.js"></script>
-
-    <!-- EmailJS -->
+<!-- EmailJS -->
     <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            emailjs.init("tl5jPJIoiOMEfjMHj");
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // EmailJS 초기화
+        emailjs.init("tl5jPJIoiOMEfjMHj");
 
-            const form = document.getElementById("emailForm");
-            const checkbox = document.getElementById("privacyAgree");
-            const submitBtn = document.getElementById("submitBtn");
+        // 폼과 버튼 찾기 (아이디가 달라도 알아서 찾아오도록 보완)
+        let form = document.getElementById("emailForm") || document.querySelector("form");
+        let submitBtn = document.getElementById("submitBtn") || document.querySelector("button[type='submit']");
 
-            if (!form || !checkbox || !submitBtn) {
-                console.error("폼 요소를 찾을 수 없습니다.", { form, checkbox, submitBtn });
-                return;
-            }
+        // [핵심] 잠겨있는 버튼을 강제로 풀어줍니다. (이제 클릭이 됩니다!)
+        if (submitBtn) {
+            submitBtn.disabled = false; 
+        }
 
-            submitBtn.disabled = !checkbox.checked;
+        if (!form) {
+            console.error("신청서 폼(form) 태그를 찾을 수 없습니다.");
+            return;
+        }
 
-            checkbox.addEventListener("change", function () {
-                submitBtn.disabled = !this.checked;
-            });
+        // 제출 버튼 클릭 시 실행
+        form.addEventListener("submit", function (event) {
+            event.preventDefault(); // 새로고침 방지
 
-            form.addEventListener("submit", function (event) {
-                event.preventDefault();
+            if (submitBtn) submitBtn.disabled = true; // 중복 발송 방지
 
-                if (!checkbox.checked) {
-                    alert("개인정보 수집 및 이용에 동의하셔야 상담신청서 제출이 가능합니다.");
-                    submitBtn.disabled = false;
-                    return;
-                }
-
-                const validation = window.validateApplicationForm
-                    ? window.validateApplicationForm()
-                    : { valid: true, message: "" };
-
-                if (!validation.valid) {
-                    alert(validation.message);
-                    submitBtn.disabled = !checkbox.checked;
-                    return;
-                }
-
-                const formData = window.collectFormData
-                    ? window.collectFormData()
-                    : null;
-
-                submitBtn.disabled = true;
-
-                emailjs.sendForm("service_9oog4dh", "template_3uwin9a", form)
-                    .then(function () {
-                        if (formData && window.showSuccessModal) {
-                            showSuccessModal(formData);
-                        } else {
-                            alert("상담 신청이 정상적으로 접수되었습니다.");
-                        }
-
-                        if (window.resetApplicationFormUI) {
-                            window.resetApplicationFormUI();
-                        } else {
-                            form.reset();
-                            submitBtn.disabled = true;
-                        }
-
-                        const person2Section = document.getElementById("person2Section");
-                        if (person2Section) {
-                            person2Section.style.display = "none";
-                        }
-                    })
-                    .catch(function (error) {
-                        console.error("EmailJS Error:", error);
-                        alert("이메일 전송 실패: " + (error.text || JSON.stringify(error)));
-                        submitBtn.disabled = !checkbox.checked;
-                    });
-            });
+            // EmailJS로 메일 전송
+            emailjs.sendForm("service_9oog4dh", "template_3uwin9a", form)
+                .then(function () {
+                    alert("상담 신청이 정상적으로 접수되었습니다.");
+                    form.reset();
+                    if (submitBtn) submitBtn.disabled = false;
+                })
+                .catch(function (error) {
+                    console.error("EmailJS 전송 에러:", error);
+                    alert("이메일 전송 실패: " + (error.text || JSON.stringify(error)));
+                    if (submitBtn) submitBtn.disabled = false;
+                });
         });
-    </script>
+    });
+</script>
 </body>
-
 </html>
