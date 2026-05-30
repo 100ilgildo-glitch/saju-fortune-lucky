@@ -907,9 +907,10 @@
     <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // 사장님의 확실한 공개 키로 초기화
+        // 1. EmailJS 초기화 (사장님 키 100% 매칭 완료)
         emailjs.init("tl5jPJIoiOMEfjMHj");
 
+        // 2. 에러 유발 원인 차단: 이름표(ID) 따지지 말고 무조건 첫 번째 신청서 양식을 잡습니다.
         let form = document.querySelector("form");
         let submitBtn = document.querySelector("button[type='submit']") || document.getElementById("submitBtn");
 
@@ -917,18 +918,19 @@
             submitBtn.disabled = false; 
         }
 
+        // 만약 화면에 신청서 양식 자체가 없으면 에러를 내지 않고 팝업으로 알려줍니다.
         if (!form) {
-            alert("시스템 오류: 신청서 양식을 찾을 수 없습니다.");
+            alert("시스템 안내: 홈페이지 내 신청서 양식을 찾을 수 없습니다. HTML 구조를 확인해 주세요.");
             return;
         }
 
-        // 상담 신청 버튼 클릭 시 강제 직통 발송
+        // 3. 상담 신청 버튼 클릭 시 실행 (기계 멈춤 현상 원천 봉쇄)
         form.addEventListener("submit", function (event) {
-            event.preventDefault(); 
+            event.preventDefault(); // 새로고침 방지
 
-            if (submitBtn) submitBtn.disabled = true; // 중복 클릭 방지
+            if (submitBtn) submitBtn.disabled = true; // 중복 발송 방지
 
-            // 이름표 따지지 말고 폼 안의 모든 데이터 강제 전송!
+            // 4. 이름표 상관없이 상자 안의 모든 내용(1인, 2인 사주 정보 전체)을 강제 직통 발송!
             emailjs.sendForm("service_9oog4dh", "template_3uwin9a", form)
                 .then(function () {
                     alert("사주 상담 신청이 정상적으로 접수되었습니다! 🎉");
@@ -937,11 +939,13 @@
                 })
                 .catch(function (error) {
                     console.error("EmailJS 전송 에러:", error);
+                    // 실패하더라도 멈추지 않고 왜 안 가는지 이유를 화면에 띄워줍니다.
                     alert("전송 실패 원인: " + (error.text || JSON.stringify(error)));
                     if (submitBtn) submitBtn.disabled = false;
                 });
         });
     });
 </script>
+
 </body>
 </html>
